@@ -4,12 +4,21 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.edeniziaCosta.pontoInteligente.enums.PerfilEnum;
 
@@ -31,7 +40,7 @@ public class Funcionario implements Serializable {
 	private PerfilEnum perfil;
 	private Date dataCriacao;
 	private Date dataAtualizacao;
-	private Empresa epresa;
+	private Empresa empresa;
 	private List<Lancamento> lancamento;
 	
 	public Funcionario() {}
@@ -55,11 +64,13 @@ public class Funcionario implements Serializable {
 	public String getEmail() {
 		return email;
 	}
-
+    
+	@Column(name = "email", nullable = false )
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
+    
+	@Column(name = "senha", nullable = false )
 	public String getSenha() {
 		return senha;
 	}
@@ -67,7 +78,8 @@ public class Funcionario implements Serializable {
 	public void setSenha(String senha) {
 		this.senha = senha;
 	}
-
+    
+	@Column(name = "cpf", nullable = false )
 	public String getCpf() {
 		return cpf;
 	}
@@ -79,11 +91,18 @@ public class Funcionario implements Serializable {
 	public BigDecimal getValorHora() {
 		return valorHora;
 	}
-
+    
+	@Column(name = "valor_hora", nullable = false )
 	public void setValorHora(BigDecimal valorHora) {
 		this.valorHora = valorHora;
 	}
-
+    
+	@Transient
+	public Optional<BigDecimal> getValorHoraOpt(){
+		return Optional.ofNullable(valorHora);
+	} 
+	
+	
 	public Float getQtasHorasTrabalhoDia() {
 		return qtasHorasTrabalhoDia;
 	}
@@ -99,7 +118,14 @@ public class Funcionario implements Serializable {
 	public void setQtasHorasAlmoco(Float qtasHorasAlmoco) {
 		this.qtasHorasAlmoco = qtasHorasAlmoco;
 	}
-
+	
+	@Transient
+	public Optional<Float> getQtdHorasTrabalhoDiaOpt(){
+	    return Optional.ofNullable(qtasHorasTrabalhoDia);	
+	}
+    
+	@Enumerated(EnumType.STRING)
+	@Column(name = "perfil", nullable = false )
 	public PerfilEnum getPerfil() {
 		return perfil;
 	}
@@ -115,7 +141,8 @@ public class Funcionario implements Serializable {
 	public void setDataCriacao(Date dataCriacao) {
 		this.dataCriacao = dataCriacao;
 	}
-
+    
+	@Column(name = "dataAtualizacao", nullable = false )
 	public Date getDataAtualizacao() {
 		return dataAtualizacao;
 	}
@@ -123,15 +150,17 @@ public class Funcionario implements Serializable {
 	public void setDataAtualizacao(Date dataAtualizacao) {
 		this.dataAtualizacao = dataAtualizacao;
 	}
-
-	public Empresa getEpresa() {
-		return epresa;
+    
+	@ManyToOne(fetch = FetchType.EAGER)
+	public Empresa getEmpresa() {
+		return empresa;
 	}
 
-	public void setEpresa(Empresa epresa) {
-		this.epresa = epresa;
+	public void setEpresa(Empresa empresa) {
+		this.empresa = empresa;
 	}
-
+    
+	@OneToMany(mappedBy= "lancamento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<Lancamento> getLancamento() {
 		return lancamento;
 	}
